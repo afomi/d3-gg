@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <style>
+    .borough.Manhattan {
+      fill: #ddc;
+    }
+    .borough.Brooklyn {
+      fill: #cdd;
+    }
+    .borough.Staten Island {
+      fill: #cdc;
+    }
+    .borough.Queens {
+      fill: #dcd;
+    }
+    .borough.Bronx {
+      display: none;
+    }
+  </style>
+  <style>
+    body {
+      font: 12px sans-serif;
+    }
+    path {
+      stroke-width: 1px;
+      stroke: #ff4645;
+      fill: grey;
+      cursor: pointer;
+    }
+    path:hover,
+    path.highlighted {
+      fill: #4b0082;
+    }
+    div.tooltip {
+      position: absolute;
+      background-color: white;
+      border: 1px solid black;
+      color: black;
+      font-weight: bold;
+      padding: 4px 8px;
+      display: none;
+    }
+  </style>
+  <title></title>
+  <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+</head>
+
+<body>
+  <script>
+    var width = 1200,
+      height = 1200;
+    var projection = d3.geo.mercator()
+      .scale(67000)
+      .translate([width / 2, height / 2]);
+    var svg = d3.select("body").append("svg")
+      .attr("width", width)
+      .attr("height", height);
+    var g = svg.append("g");
+    //Group for the map features
+    var features = svg.append("g")
+      .attr("class", "features");
+    //Create a tooltip, hidden at the start
+    var tooltip = d3.select("body").append("div").attr("class", "tooltip");
+    d3.json("nyhoods.geojson", function(error, nyhoods) {
+      // after loading geojson, use d3.geo.centroid to find out
+      // where you need to center your map
+      var center = d3.geo.centroid(nyhoods);
+      projection.center(center);
+      // now you can create new path function with
+      // correctly centered projection
+      var path = d3.geo.path().projection(projection);
+      var div = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+      // and finally draw the actual polygons
+      // var subunits = geojson.feature()
+      svg.selectAll("path")
+        .data(nyhoods.features)
+        .enter()
+        .append("path")
+        .attr("d", path)
+        .style("fill", "grey")
+        .on("mouseover", function(d) {
+          d3.select(this).transition().duration(300).style("opacity", 1);
+          div.transition().duration(300)
+            .style("opacity", 2)
+        })
+        .on("mousemove", function(d) {
+          d3.select(this).transition().duration(300).style("opacity", 1);
+          div.transition().duration(300)
+            .style("opacity", 2)
+        })
+      .on("mouseout", function(d) {
+        d3.select(this).transition().duration(300).style("opacity", 0.8);
+        div.transition().duration(300)
+          .style("opacity", 0);
+      })
+      //svg.append("circle")
+      //.data(nyhoods.properties.(neighborhood))
+      //.enter().append("circle")
+      // .attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })
+      //.attr("r", 5)
+      //.style("fill", "green");
+      //Create borough boundaries
+      // svg.selectAll(".borough")
+      //   .data(geojson.Feature)
+      //   .enter()
+      //   .append("path")
+      //   .attr("class", function(d) { return "borough "; })
+      //     .attr("d", path);
+    });
+  </script>
+</body>
+
+</html>
