@@ -52,7 +52,7 @@
     }
   </style>
   <title></title>
-  <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="//d3js.org/d3.v3.min.js" charset="utf-8">
     Modernizr.load({
       test: Modernizr.svg && Modernizr.inlinesvg,
       yep: ['d3.min.js',
@@ -63,10 +63,6 @@
 </head>
 
 <body>
-  <script src="http://d3js.org/d3.v3.min.js"></script>
-
-  <script src="nyhoods.geojson"></script>
-
   <script>
     var width = 1200,
       height = 1200;
@@ -103,7 +99,6 @@
         .attr("class", "tooltip")
         .style("opacity", 0);
       // and finally draw the actual polygons
-      var subunits = geojson.feature()
 
       svg.selectAll("path")
         .data(nyhoods.features)
@@ -127,24 +122,19 @@
         div.transition().duration(300)
           .style("opacity", 0);
       })
-
-      //svg.append("circle")
-      //.data(nyhoods.properties.(neighborhood))
-      //.enter().append("circle")
-      // .attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })
-      //.attr("r", 5)
-      //.style("fill", "green");
-
-      //Create borough boundaries
-      svg.selectAll(".borough")
-        .data(geojson.Feature)
-        .enter()
-        .append("path")
-        .attr("class", function(d) {
-          return "borough ";
-        })
-        .attr("d", path);
-
+      
+      var circles = svg.selectAll("circle")
+      .data(nyhoods.features)
+      .enter()
+      .append("circle")
+      .attr("cx", function (d) {
+        return projection(d3.geo.centroid(d))[0]
+      })
+      .attr("cy", function (d) {
+        return projection(d3.geo.centroid(d))[1]
+      })
+      .attr("r", "4")
+      .style("fill", "green");
     });
   </script>
 </body>
